@@ -3,6 +3,7 @@ package com.hdesrosiers.animatedprogressbar
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -51,17 +52,38 @@ fun CircularProgressBar(
   animDuration: Int = 1000,
   animDelay: Int = 0
 ) {
-  var animationPlayed by remember { mutableStateOf(false) }
-  val currentPercentage = animateFloatAsState(
-    targetValue = if (animationPlayed) percentage else 0f,
-    animationSpec = tween(
-      durationMillis = animDuration,
-      delayMillis = animDelay
-    )
-  )
 
-  LaunchedEffect(key1 = true) {
-    animationPlayed = true
+  /**
+   * The original tutorial with [animateFloatAsState]
+   */
+//  var animationPlayed by remember { mutableStateOf(false) }
+
+//  val currentPercentage = animateFloatAsState(
+//    targetValue = if (animationPlayed) percentage else 0f,
+//    animationSpec = tween(
+//      durationMillis = animDuration,
+//      delayMillis = animDelay
+//    )
+//  )
+
+//  LaunchedEffect(key1 = true) {
+//    animationPlayed = true
+//  }
+
+  /**
+   * Using remember { Animatable() } instead
+   */
+
+  val currentPercentage = remember { Animatable(0f) }
+
+  LaunchedEffect(key1 = percentage) {
+    currentPercentage.animateTo(
+      targetValue = percentage,
+      animationSpec = tween(
+        durationMillis = animDuration,
+        delayMillis = animDelay
+      )
+    )
   }
 
   Box(
